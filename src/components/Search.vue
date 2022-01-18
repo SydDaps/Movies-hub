@@ -16,6 +16,7 @@
         dense
         solo
         @click:append="sendKeyword"
+        @keyup.enter="sendKeyword"
         append-icon="mdi-magnify"
         
       ></v-text-field>

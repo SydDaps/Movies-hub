@@ -1,11 +1,14 @@
 <template>
   <div class="tw-relative">
+    
     <div class="tw-grid tw-grid-cols-12" v-if="resultsReady">
       <div class="tw-col-span-1"></div>
       <div class="tw-col-span-10 tw-pt-5">
-        <span class="tw-bg-green tw-h-10 tw-inline-block tw-p-2 tw-text-white tw-text-base tw-rounded-t-sm">Search results for "{{searchData}}"</span>
+        <span class="tw-bg-green tw-h-10 tw-inline-block tw-p-2 tw-text-white tw-text-base tw-rounded-t-sm" v-if="!errorPage">Search results for "{{searchData}}"</span>
+        <span class="tw-bg-red-400 tw-h-10 tw-inline-block tw-p-2 tw-text-white tw-text-base tw-rounded-t-sm" v-else-if="errorPage">{{ errorMessage }} for "{{searchData}}"</span>
         
-          <div class="tw-grid tw-grid-cols-8 tw-gap-6 tw-mt-10 xs:tw-grid-cols-2 md:tw-grid-cols-4 lg:tw-grid-cols-12">  
+        
+          <div class="tw-grid tw-grid-cols-8 tw-gap-6 tw-mt-10 xs:tw-grid-cols-2 md:tw-grid-cols-4 lg:tw-grid-cols-12" v-if="movies.length > 0">  
             <div 
             v-for="(movie, index) in movies" :key="movie.id"
             @mousemove="showIconAction(index, $event)" @mouseleave="mouseLeaveAction()"
@@ -58,18 +61,29 @@ export default {
       currentMovie: null,
       searching: false,
       resultsReady: false,
-      onDailog: false
+      onDailog: false,
+      errorPage: false,
+      errorMessage: ""
     }
   },
   methods: {
     getMovies: async function getMovies() {
       this.resultsReady = false
+      this.errorPage = false
       this.searching = true
 
       let moviesData = await fetcher.fetchMovies(this.searchData)
 
+      
       this.searching = false
       this.resultsReady = true
+      if(moviesData.Error){
+        
+        this.errorPage = true
+        this.errorMessage = moviesData.Error
+        return
+      }
+      
 
       this.movies = (moviesData.Search)
 
@@ -80,7 +94,7 @@ export default {
       
 
       let movieData = await fetcher.fetchMovies(keyword, page, singleMovie)
-      console.log(movieData)
+      
       this.currentMovie = movieData
       
       
