@@ -35,7 +35,7 @@
       indeterminate
     ></v-progress-circular>
     </div>
-    <div class="info-dailog tw-bg-red-500 tw-absolute tw-rounded-lg " v-bind:style="dailogStyle" v-if="showDailog" @mousemove="onDailog = true" @mouseleave="onDailog = false; mouseLeaveAction()" >
+    <div class="info-dailog tw-bg-red-500 tw-absolute tw-rounded-lg " v-bind:style="dailogStyle" v-if="showDailog" @mousemove="onDailog = true" @mouseleave="mouseLeaveDailog()" >
       <movie-detail :movieRequest="this.movies[this.currentIndex]"></movie-detail>
     </div>
   </div>
@@ -125,17 +125,28 @@ export default {
       
       if(Object.keys(this.dailogStyle).length == 0 ){
         this.dailogStyle = {top: `${event.pageY - 60}px`, left: `${event.pageX}px`}
-        console.log(event.offsetX)
         this.currentIndex = index
       }
       this.showDailog = true
     },
-    mouseLeaveAction(){
+    async mouseLeaveAction(){
+      await new Promise((resolve)=>setTimeout(() => {
+        resolve();
+      },100));
+      
       if(!this.onDailog){
       this.showIcon = null
       this.dailogStyle = {}
       this.showDailog = false
       }
+      
+    },
+    mouseLeaveDailog(){
+      this.onDailog = false
+      this.showIcon = null
+      this.dailogStyle = {}
+      this.showDailog = false
+      
     }
 
   },
